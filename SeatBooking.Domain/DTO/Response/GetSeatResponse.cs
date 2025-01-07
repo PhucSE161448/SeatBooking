@@ -16,5 +16,7 @@ namespace SeatBooking.Domain.DTO.Response
         public string? Floor { get; set; }
         public string SeatInfo => $"{RowChar}{ColNumber} - {SeatColor.Color} - {Floor}";
         public bool? IsBooked { get; set; }
+        public bool? IsBookedShowTime1 { get; set;}
+        public bool? IsBookedShowTime2 { get; set;}
     }
 }

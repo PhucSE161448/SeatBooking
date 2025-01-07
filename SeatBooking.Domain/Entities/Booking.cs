@@ -9,13 +9,15 @@ public partial class Booking
 
     public int SeatId { get; set; }
 
-    public string StudentName { get; set; }
+    public string StudentName { get; set; } = null!;
 
-    public DateTime? BookingTime { get; set; }
+    public DateTime BookingTime { get; set; }
+
+    public string? Description { get; set; }
 
     public DateTime ExpiryTime { get; set; }
 
-    public virtual Seat Seat { get; set; }
+    public virtual Seat Seat { get; set; } = null!;
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

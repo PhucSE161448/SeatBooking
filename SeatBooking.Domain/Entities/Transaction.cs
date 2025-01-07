@@ -7,7 +7,7 @@ public partial class Transaction
 {
     public int Id { get; set; }
 
-    public int BookingsId { get; set; }
+    public int BookingId { get; set; }
 
     public decimal TotalAmount { get; set; }
 
@@ -15,5 +15,5 @@ public partial class Transaction
 
     public DateTime? CreatedDate { get; set; }
 
-    public virtual Booking Bookings { get; set; }
+    public virtual Booking Booking { get; set; } = null!;
 }

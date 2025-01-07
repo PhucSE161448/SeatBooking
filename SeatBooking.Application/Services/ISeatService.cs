@@ -10,6 +10,6 @@ namespace SeatBooking.Application.Services
 {
     public interface ISeatService
     {
-        Task<Result<List<GetSeatResponse>>> GetPagination();
+        Task<Result<List<GetSeatResponse>>> GetPagination(int showTime);
     }
 }

@@ -20,15 +20,35 @@ namespace SeatBooking.Infrastructure.Services
     public class SeatService(IUnitOfWork<SeatBookingContext> unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         : BaseService<SeatService>(unitOfWork, mapper, httpContextAccessor), ISeatService
     {
-        public async Task<Result<List<GetSeatResponse>>> GetPagination()
+        public async Task<Result<List<GetSeatResponse>>> GetPagination(int showTime)
         {
             try
             {
-                var seat = await _unitOfWork.GetRepository<Seat>().GetListAsync(
-                    include : x => x.Include(its => its.SeatColor)
-                    .Include(its => its.ShowTime));
-                return Success(seat.Adapt<List<GetSeatResponse>>());
-            }catch (Exception ex)
+                var seats = await _unitOfWork.GetRepository<Seat>().GetListAsync(
+                    include: x => x.Include(its => its.SeatColor));
+                if (seats == null || !seats.Any())
+                {
+                    return Success(new List<GetSeatResponse>());
+                }
+                var seatResponses = seats.Adapt<List<GetSeatResponse>>();
+
+                foreach (var seatResponse in seatResponses)
+                {
+                    // Nếu showTime = 1, lấy giá trị từ IsBookedShowTime1
+                    if (showTime == 1)
+                    {
+                        seatResponse.IsBooked = seatResponse.IsBookedShowTime1;
+                    }
+                    else if (showTime == 2)
+                    {
+                        seatResponse.IsBooked = seatResponse.IsBookedShowTime2;
+                    }
+                }
+
+                // Trả về kết quả thành công với danh sách ghế đã được xử lý
+                return Success(seatResponses);
+            }
+            catch (Exception ex)
             {
 
             }

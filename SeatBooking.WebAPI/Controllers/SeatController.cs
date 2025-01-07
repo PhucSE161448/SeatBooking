@@ -10,9 +10,9 @@ namespace SeatBooking.WebAPI.Controllers
     {
         [HttpGet]
         [ProducesResponseType(typeof(Result<List<GetSeatResponse>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllPagination([FromQuery] int page = 1, [FromQuery] int size = 100)
+        public async Task<IActionResult> GetAllPagination([FromQuery] int showTime = 1)
         {
-            Result<List<GetSeatResponse>> result = await seatService.GetPagination();
+            Result<List<GetSeatResponse>> result = await seatService.GetPagination(showTime);
             return StatusCode((int)result.StatusCode, result);
         }
     }
