@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Net.payOS;
 using Net.payOS.Types;
 using SeatBooking.API.Configurations;
+using SeatBooking.Application.Services;
 using SeatBooking.Domain.DTO.Request;
+using SeatBooking.Domain.Entities;
+using SeatBooking.Infrastructure.Services;
 
 namespace SeatBooking.WebAPI.Controllers
 {
-    public class PayOsController(PayOS payOs) : BaseController
+    public class PayOsController(PayOS payOs, ISeatService seatService) : BaseController
     {
         /*[HttpPost]
         public async Task<IActionResult> Checkout([FromQuery] List<int> userId, [FromQuery] Guid courseId, [FromQuery] string paymentMethod, [FromQuery] double fee, [FromQuery] string fullName, [FromQuery] string phoneNumber)
@@ -44,32 +47,34 @@ namespace SeatBooking.WebAPI.Controllers
                 return Redirect("http://68.183.186.61:3000");
             }
         }*/
-        [HttpPost]
-        public IActionResult ProcessPayment([FromBody] PaymentRequest paymentRequest)
-        {
-            if (paymentRequest == null)
+            [HttpPost]
+            public async Task<IActionResult> ProcessPayment([FromBody] PaymentRequest paymentRequest)
             {
-                return BadRequest("Invalid payment data.");
+                if (paymentRequest == null)
+                {
+                    return BadRequest("Invalid payment data.");
+                }
+                int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
+            List<ItemData> items = new List<ItemData>();
+            var seats = seatService.GetPagination(1, paymentRequest.Seats).Result.Data;
+            var booking  = seatService.CreateBooking(paymentRequest);
+            foreach(var seat in seats)
+            {
+                ItemData data = new ItemData(seat.SeatInfo, 1, seat.SeatColor.Price);
+                items.Add(data);
             }
+            var baseUrl = "https://localhost:7021";
+           // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
+            var successUrl = $"{baseUrl}";
+            var cancelUrl = "http://68.183.186.61:3000";
+            PaymentData paymentData = new PaymentData(orderCode,(int)paymentRequest.TotalAmount, $"thanh toan ghe ngoi dot 1", items, cancelUrl, successUrl);
+            CreatePaymentResult createPayment = await payOs.createPaymentLink(paymentData);
 
-            // Log the received data (for debugging purposes)
-            Console.WriteLine("Payment Data Received:");
-            Console.WriteLine($"Student Name: {paymentRequest.StudentName}");
-            Console.WriteLine($"Selected Branch: {paymentRequest.SelectedBranch}");
-            Console.WriteLine($"Seats: {string.Join(", ", paymentRequest.Seats)}");
-            Console.WriteLine($"Total Amount: {paymentRequest.TotalAmount}");
-
-            // Perform your business logic here, e.g.:
-            // - Validate seat availability
-            // - Save payment details to the database
-            // - Process the payment
-
-            // Return a success response
             return Ok(new
             {
-                Message = "Payment processed successfully",
-                Data = paymentRequest
+                message = "redirect",
+                url = createPayment.checkoutUrl
             });
-        }
+            }
     }
 }
