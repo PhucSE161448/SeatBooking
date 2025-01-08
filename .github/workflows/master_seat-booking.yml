@@ -60,6 +60,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'seat-booking'
-          slot-name: 'Development'
+          slot-name: 'Production'
           package: .
           
