@@ -87,7 +87,8 @@ namespace SeatBooking.Infrastructure.Services
             try
             {
                 var seats = await _unitOfWork.GetRepository<Seat>().GetListAsync(predicate: seat => seatIds == null || !seatIds.Any() || seatIds.Contains(seat.Id),
-                    include: x => x.Include(its => its.SeatColor));
+                    include: x => x.Include(its => its.SeatColor)
+                        .Include(x => x.Bookings));
                 if (seats == null || !seats.Any())
                 {
                     return Success(new List<GetSeatResponse>());

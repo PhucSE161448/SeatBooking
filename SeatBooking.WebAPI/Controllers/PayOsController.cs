@@ -57,16 +57,16 @@ namespace SeatBooking.WebAPI.Controllers
                 int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
             List<ItemData> items = new List<ItemData>();
             var seats = seatService.GetPagination(1, paymentRequest.Seats).Result.Data;
-            var booking  = seatService.CreateBooking(paymentRequest);
+            var booking  = await seatService.CreateBooking(paymentRequest);
             foreach(var seat in seats)
             {
                 ItemData data = new ItemData(seat.SeatInfo, 1, seat.SeatColor.Price);
                 items.Add(data);
             }
-            var baseUrl = "https://localhost:7021";
+            var baseUrl = "https://seat-booking-drab.vercel.app/";
            // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
             var successUrl = $"{baseUrl}";
-            var cancelUrl = "http://68.183.186.61:3000";
+            var cancelUrl = "https://seat-booking-drab.vercel.app/";
             PaymentData paymentData = new PaymentData(orderCode,(int)paymentRequest.TotalAmount, $"thanh toan ghe ngoi dot 1", items, cancelUrl, successUrl);
             CreatePaymentResult createPayment = await payOs.createPaymentLink(paymentData);
 

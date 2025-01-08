@@ -9,6 +9,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SeatBooking.Domain.DTO.Response;
+using SeatBooking.Domain.Entities;
 
 namespace SeatBooking.Infrastructure
 {
@@ -45,6 +47,11 @@ namespace SeatBooking.Infrastructure
         }
         private static TypeAdapterConfig ConfigCustomMapper(this TypeAdapterConfig config)
         {
+            config.NewConfig<Seat, GetSeatResponse>()
+                .Map(dest => dest.StudentName,
+                    src => src.Bookings.Count > 0
+                        ? src.Bookings.FirstOrDefault().StudentName
+                        : string.Empty);
             return config;
         }
     }
