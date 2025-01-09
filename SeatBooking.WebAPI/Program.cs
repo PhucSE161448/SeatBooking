@@ -1,6 +1,7 @@
 using SeatBooking.API.Configurations;
 using SeatBooking.API.Middlewares;
 using System.Text.Json.Serialization;
+using SeatBooking.Infrastructure.Services.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Configuration.SettingsBinding();
 builder.Services.AddSwaggerGenOption();
 builder.Services.AddJwtValidation();
 builder.Services.AddDbContext();
+builder.Services.AddHostedService<BookingExpiration>();
 builder.Services.AddMvc()
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddPayOs();

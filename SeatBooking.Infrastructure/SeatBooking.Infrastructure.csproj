@@ -17,8 +17,4 @@
     <ProjectReference Include="..\SeatBooking.Application\SeatBooking.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\BackgroundServices\" />
-  </ItemGroup>
-
 </Project>

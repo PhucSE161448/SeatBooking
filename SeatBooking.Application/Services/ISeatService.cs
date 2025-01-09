@@ -12,6 +12,7 @@ namespace SeatBooking.Application.Services
     public interface ISeatService
     {
         Task<Result<List<GetSeatResponse>>> GetPagination(int showTime, List<int>? seatIds = null);
-        Task<bool> CreateBooking(PaymentRequest request);
+        Task<List<int>> CreateBooking(PaymentRequest request);
+        Task<bool> CreateTransactionsFromNumbers(string numbers, decimal totalAmount);
     }
 }

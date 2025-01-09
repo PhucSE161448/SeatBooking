@@ -21,10 +21,11 @@ namespace SeatBooking.Infrastructure.Services
     public class SeatService(IUnitOfWork<SeatBookingContext> unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         : BaseService<SeatService>(unitOfWork, mapper, httpContextAccessor), ISeatService
     {
-        public async Task<bool> CreateBooking(PaymentRequest paymentRequest)
+        public async Task<List<int>> CreateBooking(PaymentRequest paymentRequest)
         {
             try
             {
+                var bookingIds = new List<int>();
                 if (paymentRequest.Seats == null || !paymentRequest.Seats.Any())
                 {
                     throw new ArgumentException("Seats list cannot be null or empty.");
@@ -49,8 +50,14 @@ namespace SeatBooking.Infrastructure.Services
                     {
                         throw new InvalidOperationException($"Seat with ID {seat.Id} is already booked.");
                     }*/
-
-                    seat.IsBookedShowTime1 = true;
+                    if (paymentRequest.BookingShow == 1)
+                    {
+                        seat.IsBookedShowTime1 = true;
+                    }
+                    else
+                    {
+                        seat.IsBookedShowTime2 = true;
+                    }
 
                     var booking = new Booking
                     {
@@ -64,6 +71,7 @@ namespace SeatBooking.Infrastructure.Services
 
                     // Thêm từng đối tượng Booking
                     await _unitOfWork.GetRepository<Booking>().InsertAsync(booking);
+                    bookingIds.Add(booking.Id);
                 }
 
                 // Cập nhật trạng thái ghế
@@ -73,12 +81,16 @@ namespace SeatBooking.Infrastructure.Services
                 }
 
                 var success = await _unitOfWork.CommitAsync() > 0;
-                return success;
+                if (success)
+                {
+                    return bookingIds; // Trả về danh sách BookingId
+                }
+                return new List<int>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                return new List<int>();
             }
         }
 
@@ -130,6 +142,40 @@ namespace SeatBooking.Infrastructure.Services
 
             }
             return null!;
+        }
+        public async Task<bool> CreateTransactionsFromNumbers(string numbers, decimal totalAmount)
+        {
+            try
+            {
+                // Tách chuỗi 'numbers' thành danh sách các BookingId
+                var bookingIds = numbers.Split(',')
+                    .Select(id => int.Parse(id))
+                    .ToList();
+
+                foreach (var bookingId in bookingIds)
+                {
+                    var transaction = new Transaction
+                    {
+                        BookingId = bookingId,
+                        TotalAmount = totalAmount,
+                        PaymentType = 1,
+                        CreatedDate = DateTime.UtcNow
+                    };
+
+                    await _unitOfWork.GetRepository<Transaction>().InsertAsync(transaction);
+                }
+                var success = await _unitOfWork.CommitAsync() > 0;
+                if (success)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating transactions: {ex.Message}");
+                return false;
+            }
         }
     }
 }

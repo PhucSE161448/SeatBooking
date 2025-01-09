@@ -47,27 +47,28 @@ namespace SeatBooking.WebAPI.Controllers
                 return Redirect("http://68.183.186.61:3000");
             }
         }*/
-            [HttpPost]
-            public async Task<IActionResult> ProcessPayment([FromBody] PaymentRequest paymentRequest)
+        [HttpPost]
+        public async Task<IActionResult> ProcessPayment([FromBody] PaymentRequest paymentRequest)
+        {
+            if (paymentRequest == null)
             {
-                if (paymentRequest == null)
-                {
-                    return BadRequest("Invalid payment data.");
-                }
-                int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
+                return BadRequest("Invalid payment data.");
+            }
+            int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
             List<ItemData> items = new List<ItemData>();
             var seats = seatService.GetPagination(1, paymentRequest.Seats).Result.Data;
-            var booking  = await seatService.CreateBooking(paymentRequest);
-            foreach(var seat in seats)
+            var booking = await seatService.CreateBooking(paymentRequest);
+            string numbersString = string.Join(",", booking);
+            foreach (var seat in seats)
             {
                 ItemData data = new ItemData(seat.SeatInfo, 1, seat.SeatColor.Price);
                 items.Add(data);
             }
-            var baseUrl = "https://seat-booking-drab.vercel.app/";
-           // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
-            var successUrl = $"{baseUrl}";
+          
+            // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
+            var successUrl = $"https://seat-booking.azurewebsites.net/api/PayOs/Success?id={numbersString}&amount={paymentRequest.TotalAmount}";
             var cancelUrl = "https://seat-booking-drab.vercel.app/";
-            PaymentData paymentData = new PaymentData(orderCode,(int)paymentRequest.TotalAmount, $"thanh toan ghe ngoi dot 1", items, cancelUrl, successUrl);
+            PaymentData paymentData = new PaymentData(orderCode, (int)paymentRequest.TotalAmount, $"thanh toan ghe ngoi dot {paymentRequest.BookingShow}", items, cancelUrl, successUrl);
             CreatePaymentResult createPayment = await payOs.createPaymentLink(paymentData);
 
             return Ok(new
@@ -75,6 +76,17 @@ namespace SeatBooking.WebAPI.Controllers
                 message = "redirect",
                 url = createPayment.checkoutUrl
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Success([FromQuery] string id, [FromQuery] int amount)
+        {
+            var success = await seatService.CreateTransactionsFromNumbers(id,amount);
+            if (success)
+            {
+                return Redirect("https://seat-booking-drab.vercel.app/");
             }
+            return Redirect("https://seat-booking-drab.vercel.app/");
+        }
     }
 }

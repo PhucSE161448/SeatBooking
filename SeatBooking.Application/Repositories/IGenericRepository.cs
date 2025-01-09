@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace SeatBooking.Application.Repositories
@@ -47,5 +48,6 @@ namespace SeatBooking.Application.Repositories
 
         void DeleteAsync(T? entity);
         void DeleteRangeAsync(IEnumerable<T?> entities);
+        void Detach(DbContext context, object entity);
     }
 }

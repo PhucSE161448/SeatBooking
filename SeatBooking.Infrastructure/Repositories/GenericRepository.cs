@@ -117,5 +117,13 @@ namespace SeatBooking.Infrastructure.Repositories
         {
             _dbSet.RemoveRange(entities);
         }
+        public void Detach(DbContext context, object entity)
+        {
+            var entry = context.Entry(entity);
+            if (entry.State != EntityState.Detached)
+            {
+                entry.State = EntityState.Detached;
+            }
+        }
     }
 }
