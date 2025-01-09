@@ -18,6 +18,7 @@ public partial class Booking
     public DateTime ExpiryTime { get; set; }
 
     public int? BookingShow { get; set; }
+    public bool IsCash { get; set; }
 
     public virtual Seat Seat { get; set; } = null!;
 

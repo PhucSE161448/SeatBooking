@@ -40,7 +40,7 @@ public partial class SeatBookingContext : DbContext
             entity.Property(e => e.BookingTime).HasColumnType("datetime");
             entity.Property(e => e.ExpiryTime).HasColumnType("datetime");
             entity.Property(e => e.StudentName).HasMaxLength(255);
-
+            entity.Property(e => e.IsCash).HasDefaultValue(false);
             entity.HasOne(d => d.Seat).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.SeatId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

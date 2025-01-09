@@ -39,7 +39,7 @@ namespace SeatBooking.Infrastructure.Services.BackgroundServices
                     {
                         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<SeatBookingContext>>();
                         var expiredBookings = await unitOfWork.GetRepository<Booking>()
-                            .GetListAsync(predicate: b => b.ExpiryTime <= DateTime.UtcNow && !b.Transactions.Any(),
+                            .GetListAsync(predicate: b => b.ExpiryTime <= DateTime.UtcNow && b.IsCash == false && !b.Transactions.Any(),
                                 include: its => its.Include(x => x.Transactions));
 
                         if (expiredBookings.Any())

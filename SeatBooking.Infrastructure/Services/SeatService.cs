@@ -66,7 +66,8 @@ namespace SeatBooking.Infrastructure.Services
                         BookingTime = DateTime.UtcNow,
                         ExpiryTime = DateTime.UtcNow.AddMinutes(10),
                         Description = $"Booking for seat {seat.Id} at branch {paymentRequest.SelectedBranch}",
-                        BookingShow = paymentRequest.BookingShow
+                        BookingShow = paymentRequest.BookingShow,
+                        IsCash = paymentRequest.IsCash
                     };
 
                     // Thêm từng đối tượng Booking

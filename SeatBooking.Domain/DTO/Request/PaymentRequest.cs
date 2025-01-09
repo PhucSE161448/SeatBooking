@@ -13,5 +13,6 @@ namespace SeatBooking.Domain.DTO.Request
         public string? StudentName { get; set; }      // Student's name
         public string? SelectedBranch { get; set; }   // Selected branch
         public int? BookingShow { get; set; }
+        public bool IsCash { get; set; }
     }
 }
