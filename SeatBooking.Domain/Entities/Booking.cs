@@ -17,6 +17,8 @@ public partial class Booking
 
     public DateTime ExpiryTime { get; set; }
 
+    public int? BookingShow { get; set; }
+
     public virtual Seat Seat { get; set; } = null!;
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

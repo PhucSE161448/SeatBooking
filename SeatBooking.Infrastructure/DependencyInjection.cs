@@ -47,11 +47,11 @@ namespace SeatBooking.Infrastructure
         }
         private static TypeAdapterConfig ConfigCustomMapper(this TypeAdapterConfig config)
         {
-            config.NewConfig<Seat, GetSeatResponse>()
+            /*config.NewConfig<Seat, GetSeatResponse>()
                 .Map(dest => dest.StudentName,
                     src => src.Bookings.Count > 0
                         ? src.Bookings.FirstOrDefault().StudentName
-                        : string.Empty);
+                        : string.Empty);*/
             return config;
         }
     }

@@ -59,6 +59,7 @@ namespace SeatBooking.Infrastructure.Services
                         BookingTime = DateTime.UtcNow,
                         ExpiryTime = DateTime.UtcNow.AddMinutes(10),
                         Description = $"Booking for seat {seat.Id} at branch {paymentRequest.SelectedBranch}",
+                        BookingShow = paymentRequest.BookingShow
                     };
 
                     // Thêm từng đối tượng Booking
@@ -97,6 +98,19 @@ namespace SeatBooking.Infrastructure.Services
 
                 foreach (var seatResponse in seatResponses)
                 {
+                    var seat = seats.FirstOrDefault(s => s.Id == seatResponse.Id);
+
+                    // Kiểm tra điều kiện nếu ghế có thông tin đặt chỗ
+                    if (seat?.Bookings != null && seat.Bookings.Any())
+                    {
+                        var booking = seat.Bookings.FirstOrDefault(b => b.BookingShow == showTime && b.SeatId == seat.Id);
+
+                        if (booking != null)
+                        {
+                            seatResponse.StudentName = booking.StudentName;
+                            seatResponse.IsBooked = true;
+                        }
+                    }
                     // Nếu showTime = 1, lấy giá trị từ IsBookedShowTime1
                     if (showTime == 1)
                     {

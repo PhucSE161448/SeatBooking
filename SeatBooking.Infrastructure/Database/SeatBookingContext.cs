@@ -30,12 +30,13 @@ public partial class SeatBookingContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(AppConfiguration.ConnectionString.DefaultConnection);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Booking>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Bookings__3214EC07E2BDBDC4");
-
+            entity.Property(e => e.BookingShow).HasColumnType("int");
             entity.Property(e => e.BookingTime).HasColumnType("datetime");
             entity.Property(e => e.ExpiryTime).HasColumnType("datetime");
             entity.Property(e => e.StudentName).HasMaxLength(255);
