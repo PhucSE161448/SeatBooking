@@ -66,7 +66,7 @@ namespace SeatBooking.WebAPI.Controllers
             }
           
             // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
-            var successUrl = $"https://seat-booking.azurewebsites.net/api/PayOs/Success?id={numbersString}&amount={paymentRequest.TotalAmount}&showTime={paymentRequest.BookingShow}";
+            var successUrl = $"https://seat-booking.azurewebsites.net/api/PayOs?id={numbersString}&amount={paymentRequest.TotalAmount}&showTime={paymentRequest.BookingShow}";
             var cancelUrl = "https://seat-booking-drab.vercel.app/";
             PaymentData paymentData = new PaymentData(orderCode, (int)paymentRequest.TotalAmount, $"thanh toan ghe ngoi dot {paymentRequest.BookingShow}", items, cancelUrl, successUrl);
             CreatePaymentResult createPayment = await payOs.createPaymentLink(paymentData);
