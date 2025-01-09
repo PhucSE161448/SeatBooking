@@ -64,9 +64,10 @@ namespace SeatBooking.WebAPI.Controllers
                 ItemData data = new ItemData(seat.SeatInfo, 1, seat.SeatColor.Price);
                 items.Add(data);
             }
-          
-            // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
-            var successUrl = $"https://seat-booking.azurewebsites.net/api/PayOs?id={numbersString}&amount={paymentRequest.TotalAmount}&showTime={paymentRequest.BookingShow}";
+
+        // {ApiEndPointConstant.UserCourse.CourseUserEndpointJoin}?userId={userId}&courseId={courseId}&paymentMethod={paymentMethod}&fee={fee}&fullName={fullName}&phoneNumber={phoneNumber}"
+        
+            var successUrl = $"https://seat-booking.azurewebsites.net/PayOs?idBooking={Uri.EscapeDataString(numbersString)}&amount={paymentRequest.TotalAmount}&showTime={paymentRequest.BookingShow}";
             var cancelUrl = "https://seat-booking-drab.vercel.app/";
             PaymentData paymentData = new PaymentData(orderCode, (int)paymentRequest.TotalAmount, $"thanh toan ghe ngoi dot {paymentRequest.BookingShow}", items, cancelUrl, successUrl);
             CreatePaymentResult createPayment = await payOs.createPaymentLink(paymentData);
@@ -79,9 +80,10 @@ namespace SeatBooking.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Success([FromQuery] string id, [FromQuery] int amount, [FromQuery] int showTime)
+        public async Task<IActionResult> Success([FromQuery] string idBooking, [FromQuery] int amount, [FromQuery] int showTime)
         {
-            var success = await seatService.CreateTransactionsFromNumbers(id,amount);
+            var decodedIds = Uri.UnescapeDataString(idBooking); // Giải mã id
+            var success = await seatService.CreateTransactionsFromNumbers(decodedIds,amount);
             if (success)
             {
                 if (showTime == 1)
