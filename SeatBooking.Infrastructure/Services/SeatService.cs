@@ -72,6 +72,7 @@ namespace SeatBooking.Infrastructure.Services
 
                     // Thêm từng đối tượng Booking
                     await _unitOfWork.GetRepository<Booking>().InsertAsync(booking);
+                    await _unitOfWork.CommitAsync();
                     bookingIds.Add(booking.Id);
                 }
 
